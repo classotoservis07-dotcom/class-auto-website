@@ -76,7 +76,7 @@ export default function HeroSlider({ slides, phone, whatsapp, whatsappMessage, h
     if (reducedMotion || total <= 1) return;
     intervalRef.current = setInterval(() => {
       setCurrent((c) => (c + 1) % total);
-    }, 6000);
+    }, 4000);
   }, [reducedMotion, total]);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export default function HeroSlider({ slides, phone, whatsapp, whatsappMessage, h
       if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
       resumeTimerRef.current = setTimeout(() => {
         if (!paused) startInterval();
-      }, 6000);
+      }, 4000);
     }
   }, [isAnimating, current, paused, startInterval]);
 
