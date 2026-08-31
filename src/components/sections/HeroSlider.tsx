@@ -73,11 +73,11 @@ export default function HeroSlider({ slides, phone, whatsapp, whatsappMessage, h
   // Auto-slide başlat/durdur
   const startInterval = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
-    if (reducedMotion || total <= 1) return;
+    if (total <= 1) return;
     intervalRef.current = setInterval(() => {
       setCurrent((c) => (c + 1) % total);
     }, 4000);
-  }, [reducedMotion, total]);
+  }, [total]);
 
   useEffect(() => {
     if (!paused) startInterval();
