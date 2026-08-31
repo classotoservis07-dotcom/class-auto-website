@@ -51,21 +51,16 @@ export async function POST(req: NextRequest) {
 
     let url: string;
 
-    // Vercel Blob token belirle (öncelik sırası)
-    const blobToken =
-      process.env.BLOB_READ_WRITE_TOKEN ||
-      process.env.VERCEL_OIDC_TOKEN ||
-      null;
+    const isVercel = !!process.env.BLOB_STORE_ID;
 
-    if (blobToken) {
-      // Production: Vercel Blob
+    if (isVercel) {
+      // Production: Vercel Blob — SDK otomatik BLOB_STORE_ID + OIDC auth kullanır
       const { put } = await import('@vercel/blob');
-      const putOptions: Parameters<typeof put>[2] = {
+      const blob = await put(`uploads/${year}/${month}/${uniqueName}`, buffer, {
         access: 'public',
         contentType: file.type,
-        token: blobToken,
-      };
-      const blob = await put(`uploads/${year}/${month}/${uniqueName}`, buffer, putOptions);
+        // token geçmiyoruz — SDK BLOB_STORE_ID + VERCEL_OIDC_TOKEN ile otomatik auth yapar
+      });
       url = blob.url;
     } else {
       // Development: yerel dosya sistemi
