@@ -51,14 +51,21 @@ export async function POST(req: NextRequest) {
 
     let url: string;
 
-    // Production: Vercel Blob kullan (BLOB_STORE_ID = yeni v2, BLOB_READ_WRITE_TOKEN = eski)
-    if (process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN) {
+    // Vercel Blob token belirle (öncelik sırası)
+    const blobToken =
+      process.env.BLOB_READ_WRITE_TOKEN ||
+      process.env.VERCEL_OIDC_TOKEN ||
+      null;
+
+    if (blobToken) {
+      // Production: Vercel Blob
       const { put } = await import('@vercel/blob');
-      const blob = await put(`uploads/${year}/${month}/${uniqueName}`, buffer, {
+      const putOptions: Parameters<typeof put>[2] = {
         access: 'public',
         contentType: file.type,
-        ...(process.env.BLOB_STORE_ID ? { storeId: process.env.BLOB_STORE_ID } : {}),
-      });
+        token: blobToken,
+      };
+      const blob = await put(`uploads/${year}/${month}/${uniqueName}`, buffer, putOptions);
       url = blob.url;
     } else {
       // Development: yerel dosya sistemi
@@ -70,7 +77,7 @@ export async function POST(req: NextRequest) {
       url = `/uploads/${year}/${month}/${uniqueName}`;
     }
 
-    // Boyutları al (isteğe bağlı)
+    // Boyutları al
     let width: number | null = null;
     let height: number | null = null;
     try {
@@ -80,7 +87,7 @@ export async function POST(req: NextRequest) {
         width = meta.width ?? null;
         height = meta.height ?? null;
       }
-    } catch { /* sharp yok, atla */ }
+    } catch { /* sharp yok */ }
 
     const { prisma } = await import('@/lib/prisma');
     const media = await prisma.media.create({
@@ -99,6 +106,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, media });
   } catch (error) {
     console.error('[Upload API]:', error);
-    return NextResponse.json({ error: 'Yükleme hatası.' }, { status: 500 });
+    const msg = error instanceof Error ? error.message : 'Bilinmeyen hata';
+    return NextResponse.json({ error: `Yükleme hatası: ${msg}` }, { status: 500 });
   }
 }
