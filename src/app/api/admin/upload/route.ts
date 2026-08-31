@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       const blob = await put(`uploads/${year}/${month}/${uniqueName}`, buffer, {
         access: 'public',
         contentType: file.type,
-        // token geçmiyoruz — SDK BLOB_STORE_ID + VERCEL_OIDC_TOKEN ile otomatik auth yapar
+        token: process.env.BLOB_READ_WRITE_TOKEN,
       });
       url = blob.url;
     } else {
