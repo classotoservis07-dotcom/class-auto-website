@@ -51,12 +51,13 @@ export async function POST(req: NextRequest) {
 
     let url: string;
 
-    // Production: Vercel Blob kullan
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
+    // Production: Vercel Blob kullan (BLOB_STORE_ID = yeni v2, BLOB_READ_WRITE_TOKEN = eski)
+    if (process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN) {
       const { put } = await import('@vercel/blob');
       const blob = await put(`uploads/${year}/${month}/${uniqueName}`, buffer, {
         access: 'public',
         contentType: file.type,
+        ...(process.env.BLOB_STORE_ID ? { storeId: process.env.BLOB_STORE_ID } : {}),
       });
       url = blob.url;
     } else {
