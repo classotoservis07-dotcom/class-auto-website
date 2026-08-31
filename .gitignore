@@ -50,3 +50,6 @@ dev.db-wal
 
 # Yüklenen görseller — Vercel'de kalıcı değil, ayrıca yönetilmeli
 # public/uploads/   ← production'da CDN kullanılacak
+
+.vercel
+.env*
