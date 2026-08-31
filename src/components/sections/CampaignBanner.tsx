@@ -81,14 +81,14 @@ export default async function CampaignBanner() {
         >
           {/* Left: text content */}
           <div>
-            {/* Label */}
+            {/* Label — YEŞİL rozet */}
             <div
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: 'rgba(227,6,19,0.15)',
-                border: '1px solid rgba(227,6,19,0.35)',
+                background: 'rgba(22,163,74,0.18)',
+                border: '1px solid rgba(22,163,74,0.45)',
                 borderRadius: '999px',
                 padding: '4px 12px',
                 marginBottom: '16px',
@@ -99,14 +99,14 @@ export default async function CampaignBanner() {
                   width: '6px',
                   height: '6px',
                   borderRadius: '50%',
-                  background: '#E30613',
+                  background: '#22C55E',
                   display: 'inline-block',
                 }}
                 aria-hidden="true"
               />
               <span
                 style={{
-                  color: '#E30613',
+                  color: '#4ADE80',
                   fontSize: '11px',
                   fontWeight: 700,
                   textTransform: 'uppercase',
@@ -173,7 +173,7 @@ export default async function CampaignBanner() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                background: '#E30613',
+                background: '#22C55E',
                 color: '#fff',
                 fontWeight: 700,
                 fontSize: '0.9375rem',
@@ -197,7 +197,7 @@ export default async function CampaignBanner() {
             )}
           </div>
 
-          {/* Right: image */}
+          {/* Right: image with price overlay */}
           {hasImage && imgSrc && (
             <div
               style={{
@@ -214,6 +214,44 @@ export default async function CampaignBanner() {
                 style={{ objectFit: 'cover' }}
                 unoptimized
               />
+              {/* Gradient overlay for text readability */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)',
+              }} />
+              {/* Price badge overlay */}
+              {campaign.badge && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: '16px',
+                  left: '16px',
+                  right: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <div style={{
+                    background: 'rgba(22,163,74,0.92)',
+                    border: '1.5px solid #4ADE80',
+                    borderRadius: '8px',
+                    padding: '10px 20px',
+                    textAlign: 'center',
+                    backdropFilter: 'blur(4px)',
+                  }}>
+                    <span style={{
+                      color: '#fff',
+                      fontSize: 'clamp(1rem, 2.5vw, 1.375rem)',
+                      fontWeight: 800,
+                      fontFamily: 'Oswald, Arial Narrow, sans-serif',
+                      letterSpacing: '0.03em',
+                      display: 'block',
+                    }}>
+                      {campaign.badge}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
