@@ -171,12 +171,12 @@ export default function HeroSlider({ slides, phone, whatsapp, whatsappMessage, h
               gap: '8px',
               padding: '5px 14px',
               borderRadius: '999px',
-              border: '1px solid rgba(227,6,19,0.35)',
-              background: 'rgba(227,6,19,0.09)',
+              border: '1px solid rgba(22,163,74,0.45)',
+              background: 'rgba(22,163,74,0.15)',
               marginBottom: '20px',
             }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#E30613', flexShrink: 0 }} aria-hidden="true" />
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#E30613', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} aria-hidden="true" />
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#4ADE80', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 {slide.badgeText || 'Antalya Muratpaşa — Güzeloba'}
               </span>
             </div>
@@ -269,12 +269,12 @@ export default function HeroSlider({ slides, phone, whatsapp, whatsappMessage, h
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '6px',
                     padding: '6px 12px', borderRadius: '999px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    color: '#9CA3AF', fontSize: '12px',
+                    background: 'rgba(22,163,74,0.12)',
+                    border: '1px solid rgba(22,163,74,0.3)',
+                    color: '#4ADE80', fontSize: '12px',
                   }}
                 >
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#E30613" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                   {badge}
