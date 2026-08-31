@@ -1,7 +1,7 @@
-import type { Metadata } from 'next';
 import { SITE_CONFIG } from '@/lib/config';
+import type { Metadata } from 'next';
 
-const { seo, brand, contact, address, tracking } = SITE_CONFIG;
+const { seo, brand, tracking } = SITE_CONFIG;
 
 /** Otomatik JSON-LD LocalBusiness + AutoRepair schema */
 export function generateLocalBusinessSchema() {
@@ -13,13 +13,13 @@ export function generateLocalBusinessSchema() {
     url: seo.siteUrl,
     logo: `${seo.siteUrl}${brand.logoPath}`,
     image: `${seo.siteUrl}${seo.ogImage}`,
-    telephone: contact.phonePrimary,
+    telephone: SITE_CONFIG.contact.phone || undefined,
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Güzeloba Mahallesi Havaalanı Caddesi No:11/D',
       addressLocality: 'Muratpaşa',
       addressRegion: 'Antalya',
-      postalCode: address.postalCode,
+      postalCode: SITE_CONFIG.address.postalCode,
       addressCountry: 'TR',
     },
     geo: {
@@ -31,14 +31,7 @@ export function generateLocalBusinessSchema() {
     openingHoursSpecification: [
       {
         '@type': 'OpeningHoursSpecification',
-        dayOfWeek: [
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday',
-        ],
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         opens: '08:00',
         closes: '18:00',
       },
@@ -46,35 +39,14 @@ export function generateLocalBusinessSchema() {
     priceRange: '₺₺',
     currenciesAccepted: 'TRY',
     paymentAccepted: 'Cash, Credit Card',
-    areaServed: [
-      'Antalya',
-      'Muratpaşa',
-      'Lara',
-      'Güzeloba',
-      'Konyaaltı',
-      'Kepez',
-    ],
-    hasMap: address.googleMapsUrl,
-    sameAs: [
-      seo.siteUrl,
-      address.googleBusinessUrl,
-    ].filter(Boolean),
+    areaServed: ['Antalya', 'Muratpaşa', 'Lara', 'Güzeloba', 'Konyaaltı', 'Kepez'],
+    hasMap: SITE_CONFIG.address.googleMapsUrl,
+    sameAs: [seo.siteUrl, SITE_CONFIG.address.googleBusinessUrl].filter(Boolean),
     serviceType: [
-      'Mekanik Bakım',
-      'Oto Elektrik',
-      'Kaporta Onarımı',
-      'Oto Boya',
-      'Boyasız Göçük Düzeltme',
-      'Klima Bakımı',
-      'Lastik Değişimi',
-      'Bilgisayarlı Arıza Tespiti',
+      'Mekanik Bakım', 'Oto Elektrik', 'Kaporta Onarımı', 'Oto Boya',
+      'Boyasız Göçük Düzeltme', 'Klima Bakımı', 'Lastik Değişimi', 'Bilgisayarlı Arıza Tespiti',
     ],
   };
-}
-
-/** Sayfa başlığı oluşturucu */
-export function pageTitle(title: string): string {
-  return `${title} | ${brand.name} Antalya Oto Servis`;
 }
 
 /** Sayfa metadata oluşturucu */
@@ -85,9 +57,7 @@ export function generatePageMetadata(opts: {
   keywords?: string[];
   noindex?: boolean;
 }): Metadata {
-  const url = opts.slug
-    ? `${seo.siteUrl}/${opts.slug}`
-    : seo.siteUrl;
+  const url = opts.slug ? `${seo.siteUrl}/${opts.slug}` : seo.siteUrl;
 
   return {
     title: opts.title,
@@ -96,9 +66,7 @@ export function generatePageMetadata(opts: {
     robots: opts.noindex
       ? { index: false, follow: false }
       : { index: true, follow: true },
-    alternates: {
-      canonical: url,
-    },
+    alternates: { canonical: url },
     openGraph: {
       title: opts.title,
       description: opts.description,
@@ -106,14 +74,12 @@ export function generatePageMetadata(opts: {
       siteName: brand.name,
       locale: seo.locale,
       type: 'website',
-      images: [
-        {
-          url: `${seo.siteUrl}${seo.ogImage}`,
-          width: 1200,
-          height: 630,
-          alt: `${brand.name} — ${opts.title}`,
-        },
-      ],
+      images: [{
+        url: `${seo.siteUrl}${seo.ogImage}`,
+        width: 1200,
+        height: 630,
+        alt: `${brand.name} — ${opts.title}`,
+      }],
     },
     twitter: {
       card: seo.twitterCard,

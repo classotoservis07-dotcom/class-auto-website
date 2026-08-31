@@ -1,31 +1,99 @@
 @import "tailwindcss";
 
-/* ─── CSS Özel Değişkenler (Design Tokens) ──────────────────────────── */
+/* ─── CSS Design Tokens — CLASS AUTO Marka Sistemi ──────────────────── */
 :root {
-  /* Zeminler */
-  --bg-primary:    #111315;
-  --bg-secondary:  #1A1D20;
-  --bg-card:       #202429;
-  --bg-card-hover: #252A30;
+  /* ── Marka renkleri ── */
+  --color-brand-red:        #E30613;
+  --color-brand-red-hover:  #B8040E;
+  --color-brand-red-light:  rgba(227,6,19,0.10);
+  --color-brand-red-border: rgba(227,6,19,0.30);
 
-  /* Kırmızı (logo referansı) */
-  --red:           #C8281E;
-  --red-hover:     #A82118;
-  --red-light:     rgba(200, 40, 30, 0.12);
-  --red-border:    rgba(200, 40, 30, 0.3);
+  /* ── Antrasit / Koyu yüzeyler ── */
+  --color-antrasit:     #202A34;
+  --color-graphite:     #11171D;
+  --color-surface-dark: #192129;
+  --color-surface-card: #1E252D;
 
-  /* Metin */
-  --text-primary:  #F4F4F4;
-  --text-muted:    #AEB3B8;
-  --text-subtle:   #6B7280;
+  /* ── Açık yüzeyler (beyaz header + içerik bölümleri) ── */
+  --color-white:    #FFFFFF;
+  --color-bg-light: #F5F6F7;
+  --color-border:   #E2E6EA;
 
-  /* Kenarlık */
-  --border:        #2A2F35;
-  --border-light:  rgba(255,255,255,0.06);
+  /* ── Metin ── */
+  --color-text-main:      #1D252D;
+  --color-text-secondary: #66717C;
+  --color-text-light:     #F5F6F7;
+  --color-text-muted:     #9CA3AF;
 
-  /* Metalik vurgu */
-  --metal:         rgba(255,255,255,0.04);
-  --metal-hover:   rgba(255,255,255,0.07);
+  /* ── Özel ── */
+  --color-wa-green: #25D366;
+
+  /* ── Header yükseklikleri ── */
+  --topbar-height: 36px;
+  --header-height: 80px;
+  --total-header:  116px;  /* topbar + header */
+
+  /* ─── Legacy uyumluluk (eski kod için, kaldırılacak) ── */
+  --primary:        #E30613;
+  --primary-hover:  #B8040E;
+  --primary-light:  rgba(227,6,19,0.10);
+  --primary-border: rgba(227,6,19,0.30);
+
+  /* ── Antrasit / Marka Koyu Rengi ── */
+  --charcoal:       #202A34;      /* Ana antrasit */
+
+  /* ── Arka Plan Katmanları ── */
+  --background:     #0E1115;      /* En koyu arka plan */
+  --surface:        #161B21;      /* İkincil arka plan */
+  --surface-card:   #1E252D;      /* Kart zemini */
+  --surface-hover:  #242C35;      /* Kart hover */
+
+  /* ── Açık Zemin ── */
+  --bg-light:       #F5F6F7;      /* Açık section zemini */
+
+  /* ── Metin ── */
+  --text:           #202A34;      /* Koyu metin (açık zeminde) */
+  --text-light:     #F5F6F7;      /* Açık metin (koyu zeminde) */
+  --muted:          #9CA3AF;      /* İkincil gri */
+  --subtle:         #6B7280;      /* Üçüncül gri */
+
+  /* ── Kenarlık ── */
+  --border:         #2A3340;      /* Normal kenarlık */
+  --border-light:   rgba(255,255,255,0.06);
+
+  /* ── Durum Renkleri ── */
+  --success:        #16A34A;
+  --warning:        #D97706;
+  --error:          #DC2626;
+
+  /* ── Design Tokens (Yeni sistem) ── */
+  --color-brand-red:        #E30613;
+  --color-brand-red-hover:  #B8040E;
+  --color-antrasit:         #202A34;
+  --color-graphite:         #11171D;
+  --color-surface-dark:     #192129;
+  --color-bg-light:         #F5F6F7;
+  --color-white:            #FFFFFF;
+  --color-text-main:        #1D252D;
+  --color-text-secondary:   #66717C;
+  --color-border:           #E2E6EA;
+  --color-wa-green:         #25D366;
+  --header-height:          116px; /* 36px topbar + 80px header */
+
+  /* ── Legacy uyumluluk (eski kod için) ── */
+  --red:            #E30613;
+  --red-hover:      #B9040E;
+  --red-light:      rgba(227,6,19,0.10);
+  --red-border:     rgba(227,6,19,0.30);
+  --bg-primary:     #0E1115;
+  --bg-secondary:   #161B21;
+  --bg-card:        #1E252D;
+  --bg-card-hover:  #242C35;
+  --text-primary:   #F5F6F7;
+  --text-muted:     #9CA3AF;
+  --text-subtle:    #6B7280;
+  --metal:          rgba(255,255,255,0.04);
+  --metal-hover:    rgba(255,255,255,0.07);
 }
 
 /* ─── Temel Sıfırlama ───────────────────────────────────────────────── */
@@ -367,7 +435,92 @@ img, video {
 /* ─── Renk değerleri Tailwind için ────────────────────────────────── */
 @layer base {
   :root {
-    --color-red: 200 40 30;
-    --color-bg: 17 19 21;
+    --color-red: 227 6 19;
+    --color-bg: 14 17 21;
   }
 }
+
+/* ─── Footer link hover (CSS ile — Server Component'ten JS kaldırıldı) ── */
+.footer-link:hover {
+  color: #E30613 !important;
+}
+.footer-legal-link:hover {
+  color: #9CA3AF !important;
+}
+
+/* ─── Site nav link hover (beyaz header için) ─────────────────────── */
+.nav-link-site:hover {
+  color: #E30613 !important;
+  background: rgba(227,6,19,0.06) !important;
+}
+
+/* ─── Bölüm zemin sınıfları ─────────────────────────────────────── */
+.section-white  { background: var(--color-white); }
+.section-light  { background: var(--color-bg-light); }
+.section-dark   { background: var(--color-graphite); color: var(--color-text-light); }
+.section-antrasit { background: var(--color-antrasit); color: var(--color-text-light); }
+.section-red    { background: var(--color-brand-red); color: #fff; }
+
+/* ─── Anchor scroll hedefleri — header sabit olduğunda gizlenmesin ── */
+[id] {
+  scroll-margin-top: 120px;
+}
+
+/* ─── Floating contact buton animasyonu ─────────────────────────── */
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+}
+.float-bob {
+  animation: float-bob 2.5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .float-bob { animation: none; }
+}
+
+/* ─── Mobil safe-area yardımcı ──────────────────────────────────── */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─── Kampanya banner CTA hover ─────────────────────────────────── */
+.campaign-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ─── Hizmet kartı hover ─────────────────────────────────────────── */
+.service-card:hover {
+  border-color: var(--color-brand-red) !important;
+  box-shadow: 0 4px 20px rgba(227,6,19,0.12);
+  transform: translateY(-2px);
+}
+.service-card {
+  transition: all 0.2s ease;
+}
+
+/* ─── İletişim harita bölümü ─────────────────────────────────────── */
+#iletisim-harita {
+  scroll-margin-top: 120px;
+}
+
+/* ─── Floating buton (masaüstü) ──────────────────────────────────── */
+.floating-btn-desktop {
+  transition: all 0.2s ease;
+}
+.floating-btn-desktop:hover {
+  transform: translateX(-4px);
+  box-shadow: -4px 4px 16px rgba(0,0,0,0.2) !important;
+}
+
+/* ─── Section yardımcı sınıflar ──────────────────────────────────── */
+.section-white   { background: var(--color-white, #FFFFFF); }
+.section-light   { background: var(--color-bg-light, #F5F6F7); }
+.section-dark    { background: var(--color-graphite, #11171D); }
+.section-red     { background: var(--color-brand-red, #E30613); }
+.section-antrasit { background: var(--color-antrasit, #202A34); }
+
+/* ─── Evrensel anchor scroll-margin ──────────────────────────────── */
+/* Tüm id'li elementler header yüksekliği kadar scroll marjı alır */
+[id] { scroll-margin-top: 120px; }

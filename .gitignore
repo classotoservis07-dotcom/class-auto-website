@@ -30,8 +30,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
+.env.local
+.env.production
 
 # vercel
 .vercel
@@ -39,3 +41,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# database — yerel SQLite, Vercel'e gitmesin
+dev.db
+dev.db-shm
+dev.db-wal
+*.db
+
+# Yüklenen görseller — Vercel'de kalıcı değil, ayrıca yönetilmeli
+# public/uploads/   ← production'da CDN kullanılacak

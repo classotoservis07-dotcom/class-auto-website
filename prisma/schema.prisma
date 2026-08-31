@@ -1,0 +1,301 @@
+// CLASS AUTO — Prisma Schema
+// Veritabanı: SQLite (lokal geliştirme), Turso/LibSQL (üretim)
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Kullanıcılar ─────────────────────────────────────────────────────────────
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  role          String    @default("admin") // admin | editor | viewer
+  isActive      Boolean   @default(true)
+  lastLoginAt   DateTime?
+  loginAttempts Int       @default(0)
+  lockedUntil   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  activityLogs  ActivityLog[]
+}
+
+// ─── Site Ayarları ────────────────────────────────────────────────────────────
+model SiteSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  group     String   @default("general") // general | contact | seo | social | logo
+  label     String
+  type      String   @default("text")    // text | textarea | image | boolean | json | color
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Hero Bölümü ─────────────────────────────────────────────────────────────
+model HeroSection {
+  id              Int      @id @default(autoincrement())
+  title           String   @default("Aracınız İçin Güvenilir ve Profesyonel Servis")
+  subtitle        String
+  desktopImage    String?
+  mobileImage     String?
+  overlayOpacity  Int      @default(60)    // 0-100
+  height          String   @default("90vh")
+  textAlign       String   @default("left") // left | center | right
+  btn1Text        String   @default("WhatsApp'tan Randevu Al")
+  btn1Url         String   @default("/iletisim")
+  btn2Text        String   @default("Hemen Ara")
+  btn2Url         String   @default("tel:")
+  btn3Text        String   @default("Hizmetleri İncele")
+  btn3Url         String   @default("/hizmetler")
+  trustBadges     String   @default("[]")  // JSON string
+  isActive        Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+}
+
+// ─── Hero Slaytları (Slider için) ────────────────────────────────────────────
+model HeroSlide {
+  id             Int      @id @default(autoincrement())
+  sortOrder      Int      @default(0)
+  isActive       Boolean  @default(true)
+  title          String
+  subtitle       String
+  bgImage        String?
+  overlayOpacity Int      @default(55)
+  btn1Text       String   @default("WhatsApp'tan Randevu Al")
+  btn1Url        String   @default("/iletisim")
+  btn2Text       String   @default("Hizmetlerimiz")
+  btn2Url        String   @default("/hizmetler")
+  badgeText      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ─── Ana Sayfa Bölümleri ──────────────────────────────────────────────────────
+model PageSection {
+  id          Int      @id @default(autoincrement())
+  page        String   @default("home")   // home | about | services
+  sectionKey  String                       // hero | services | why | process | works | faq | cta
+  title       String?
+  subtitle    String?
+  content     String?
+  settings    String   @default("{}")     // JSON extra settings
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  updatedAt   DateTime @updatedAt
+
+  @@unique([page, sectionKey])
+}
+
+// ─── Hizmetler ────────────────────────────────────────────────────────────────
+model Service {
+  id              Int       @id @default(autoincrement())
+  slug            String    @unique
+  title           String
+  shortDesc       String
+  description     String    // HTML/Markdown
+  icon            String?
+  coverImage      String?
+  advantages      String    @default("[]")  // JSON
+  process         String    @default("[]")  // JSON [{step, title, desc}]
+  faqItems        String    @default("[]")  // JSON
+  metaTitle       String?
+  metaDesc        String?
+  isActive        Boolean   @default(true)
+  sortOrder       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  works           Work[]
+}
+
+// ─── Çalışmalar / Araç Galerisi ───────────────────────────────────────────────
+model Work {
+  id              Int       @id @default(autoincrement())
+  title           String
+  slug            String    @unique
+  vehicleBrand    String?
+  vehicleModel    String?
+  vehicleYear     Int?
+  serviceId       Int?
+  shortDesc       String?
+  description     String?
+  coverImage      String?
+  images          String    @default("[]")  // JSON [{url, alt, width, height}]
+  beforeImage     String?
+  afterImage      String?
+  workDate        DateTime?
+  category        String?   // kaporta | boya | mekanik | elektrik | lastik | klima | genel | diger
+  showOnHome      Boolean   @default(false)
+  status          String    @default("draft") // draft | published
+  sortOrder       Int       @default(0)
+  metaTitle       String?
+  metaDesc        String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  service         Service?  @relation(fields: [serviceId], references: [id])
+}
+
+// ─── Müşteri Yorumları ────────────────────────────────────────────────────────
+model Review {
+  id          Int      @id @default(autoincrement())
+  authorName  String
+  rating      Int      @default(5)   // 1-5
+  text        String
+  source      String   @default("form")  // form | google | facebook
+  isApproved  Boolean  @default(false)
+  showOnHome  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── SSS ──────────────────────────────────────────────────────────────────────
+model FAQ {
+  id         Int      @id @default(autoincrement())
+  question   String
+  answer     String
+  category   String?
+  isActive   Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ─── Randevu ve Talepler ──────────────────────────────────────────────────────
+model Appointment {
+  id              Int       @id @default(autoincrement())
+  fullName        String
+  phone           String
+  vehicleBrand    String?
+  vehicleModel    String?
+  plate           String?
+  serviceId       Int?
+  serviceName     String?
+  preferredDate   DateTime?
+  message         String?
+  status          String    @default("new")
+  // new | to_call | called | quoted | scheduled | converted | completed | cancelled | lost
+  adminNote       String?
+  source          String    @default("form") // form | whatsapp | phone | landing
+  landingPage     String?   // hangi reklam sayfasından
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  utmContent      String?
+  gclid           String?
+  gbraid          String?
+  wbraid          String?
+  kvkkApproved    Boolean   @default(false)
+  ipAddress       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// ─── Reklam / Landing Sayfaları ───────────────────────────────────────────────
+model LandingPage {
+  id              Int      @id @default(autoincrement())
+  slug            String   @unique
+  title           String
+  headline        String
+  heroImage       String?
+  content         String?
+  serviceType     String?
+  metaTitle       String?
+  metaDesc        String?
+  isActive        Boolean  @default(true)
+  showHero        Boolean  @default(true)
+  showBeforeAfter Boolean  @default(true)
+  showFaq         Boolean  @default(true)
+  conversionGoal  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ─── Medya Kütüphanesi ────────────────────────────────────────────────────────
+model Media {
+  id           Int      @id @default(autoincrement())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  altText      String?
+  title        String?
+  description  String?
+  url          String
+  thumbUrl     String?
+  webpUrl      String?
+  avifUrl      String?
+  folder       String   @default("uploads")
+  createdAt    DateTime @default(now())
+}
+
+// ─── Yönlendirmeler ───────────────────────────────────────────────────────────
+model Redirect {
+  id        Int      @id @default(autoincrement())
+  from      String   @unique
+  to        String
+  type      Int      @default(301)
+  isActive  Boolean  @default(true)
+  hits      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Aktivite Kayıtları ───────────────────────────────────────────────────────
+model ActivityLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  action     String
+  target     String?
+  detail     String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  user       User?    @relation(fields: [userId], references: [id])
+}
+
+// ─── Kampanyalar ──────────────────────────────────────────────────────────────
+model Campaign {
+  id              Int      @id @default(autoincrement())
+  title           String
+  description     String?
+  imageUrl        String?
+  image           String?
+  badge           String?
+  buttonText      String?
+  buttonUrl       String?
+  ctaText         String?
+  ctaUrl          String?
+  startDate       DateTime?
+  endDate         DateTime?
+  isActive        Boolean  @default(true)
+  showOnHome      Boolean  @default(false)
+  status          String   @default("draft") // draft | published
+  bannerColor     String?
+  terms           String?
+  relatedService  String?
+  landingPageUrl  String?
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ─── Çerez Onayı Kayıtları ───────────────────────────────────────────────────
+model CookieConsent {
+  id          Int      @id @default(autoincrement())
+  sessionId   String   @unique
+  analytics   Boolean  @default(false)
+  marketing   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}

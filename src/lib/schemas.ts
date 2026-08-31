@@ -6,32 +6,22 @@ export const contactFormSchema = z.object({
     .string()
     .min(2, 'Ad Soyad en az 2 karakter olmalıdır.')
     .max(100, 'Ad Soyad çok uzun.')
-    .regex(/^[\p{L}\s'-]+$/u, 'Ad Soyad geçersiz karakter içeriyor.'),
+    .regex(/^[\p{L}\s'\-]+$/u, 'Ad Soyad geçersiz karakter içeriyor.'),
 
   phone: z
     .string()
     .min(10, 'Telefon numarası geçerli değil.')
     .max(20, 'Telefon numarası çok uzun.')
-    .regex(
-      /^[\d\s\-\+\(\)]+$/,
-      'Telefon numarası yalnız rakam, boşluk ve - + ( ) içerebilir.'
-    ),
+    .regex(/^[\d\s\-+()]+$/, 'Telefon numarası yalnız rakam, boşluk ve - + ( ) içerebilir.'),
 
   vehicleMakeModel: z
     .string()
     .min(2, 'Araç marka ve modeli giriniz.')
     .max(100, 'Araç bilgisi çok uzun.'),
 
-  plate: z
-    .string()
-    .max(15, 'Plaka çok uzun.')
-    .optional()
-    .or(z.literal('')),
+  plate: z.string().max(15, 'Plaka çok uzun.').optional().or(z.literal('')),
 
-  service: z
-    .string()
-    .min(1, 'Lütfen bir hizmet seçiniz.')
-    .max(100),
+  service: z.string().min(1, 'Lütfen bir hizmet seçiniz.').max(100),
 
   message: z
     .string()
@@ -39,9 +29,7 @@ export const contactFormSchema = z.object({
     .max(1000, 'Mesajınız çok uzun (en fazla 1000 karakter).'),
 
   kvkk: z.literal(true, {
-    errorMap: () => ({
-      message: 'Devam etmek için KVKK metnini onaylamanız gerekmektedir.',
-    }),
+    message: 'Devam etmek için KVKK metnini onaylamanız gerekmektedir.',
   }),
 
   // Honeypot — botlar doldurur, gerçek kullanıcılar boş bırakır
