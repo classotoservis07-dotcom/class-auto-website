@@ -125,27 +125,27 @@ export default function ClientHeader({
           }}
           aria-hidden={scrolled}
         >
-          <div className="container-site" style={{ height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+          <div className="container-site" style={{ height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', overflow: 'hidden' }}>
             {/* Sol: Adres + Saat */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, overflow: 'hidden' }}>
               {address && (
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: 'rgba(255,255,255,0.92)', whiteSpace: 'nowrap' }}>
+                <span style={{ alignItems: 'center', gap: '5px', fontSize: '12px', color: 'rgba(255,255,255,0.92)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} className="flex">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                   <span className="hidden sm:inline">{address}</span>
-                  <span className="sm:hidden">Güzeloba, Muratpaşa / Antalya</span>
+                  <span className="sm:hidden">Güzeloba / Antalya</span>
                 </span>
               )}
               {workingHours && (
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: 'rgba(255,255,255,0.92)', whiteSpace: 'nowrap' }} className="hidden md:flex">
+                <span style={{ alignItems: 'center', gap: '5px', fontSize: '12px', color: 'rgba(255,255,255,0.92)', whiteSpace: 'nowrap' }} className="hidden md:flex">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                   {workingHours}
                 </span>
               )}
             </div>
             {/* Sağ: Tel + Email */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
               {email && (
-                <a href={`mailto:${email}`} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: 'rgba(255,255,255,0.9)', textDecoration: 'none', whiteSpace: 'nowrap' }} className="hidden md:flex">
+                <a href={`mailto:${email}`} style={{ alignItems: 'center', gap: '5px', fontSize: '12px', color: 'rgba(255,255,255,0.9)', textDecoration: 'none', whiteSpace: 'nowrap' }} className="hidden md:flex">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                   {email}
                 </a>

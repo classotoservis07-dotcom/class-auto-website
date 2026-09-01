@@ -153,7 +153,8 @@ export default function HeroSlider({ slides, phone, whatsapp, whatsappMessage, h
             alt=""
             fill
             priority
-            style={{ objectFit: 'cover', objectPosition: 'center' }}
+            style={{ objectFit: 'cover', objectPosition: 'center center' }}
+            sizes="100vw"
             unoptimized
           />
           <div
