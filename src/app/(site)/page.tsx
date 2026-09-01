@@ -159,10 +159,13 @@ const getHeroSlides = unstable_cache(
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 const getServices = unstable_cache(
-  async () => prisma.service.findMany({
-    where: { isActive: true },
-    orderBy: { sortOrder: 'asc' },
-  }),
+  async () => {
+    const rows = await prisma.service.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: 'asc' },
+    });
+    return rows as Array<{ id: number; title: string; slug: string; description: string | null; icon: string | null; sortOrder: number; isActive: boolean }>;
+  },
   ['services-list'],
   { tags: ['services'], revalidate: 3600 }
 );
@@ -306,7 +309,7 @@ export default async function HomePage() {
                   {service.title}
                 </h3>
                 <p style={{ color: '#66717C', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '16px' }}>
-                  {'shortDesc' in service ? service.shortDesc : service.description}
+                  {(service as { description?: string; shortDesc?: string }).description || (service as { shortDesc?: string }).shortDesc || ''}
                 </p>
                 <span style={{ color: '#E30613', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                   Detaylı İncele
