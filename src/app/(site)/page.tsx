@@ -334,7 +334,7 @@ export default async function HomePage() {
       ═══════════════════════════════════════════════════════════════════ */}
       <section className="section-py" style={{ background: '#FFFFFF' }} aria-labelledby="why-heading">
         <div className="container-site">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}
+          <div style={{ display: 'grid', gap: '3rem', alignItems: 'center' }}
             className="why-grid">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4"
@@ -351,7 +351,7 @@ export default async function HomePage() {
               <Link href="/iletisim" className="btn-primary">Randevu Al</Link>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gap: '1rem' }} className="why-inner-grid">
               {WHY_ITEMS.map((item) => (
                 <div
                   key={item.title}
@@ -374,7 +374,14 @@ export default async function HomePage() {
         </div>
         <style>{`
           .why-grid { grid-template-columns: 1fr 1fr; }
-          @media (max-width: 1023px) { .why-grid { grid-template-columns: 1fr; } }
+          .why-inner-grid { grid-template-columns: 1fr 1fr; }
+          @media (max-width: 767px) {
+            .why-grid { grid-template-columns: 1fr !important; }
+            .why-inner-grid { grid-template-columns: 1fr 1fr !important; }
+          }
+          @media (max-width: 480px) {
+            .why-inner-grid { grid-template-columns: 1fr !important; }
+          }
           .why-card:hover { border-color: rgba(227,6,19,0.25) !important; }
           .hero-grid { grid-template-columns: 1fr 1fr; }
           @media (max-width: 1023px) { .hero-grid { grid-template-columns: 1fr !important; } }

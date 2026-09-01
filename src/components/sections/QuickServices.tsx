@@ -114,7 +114,6 @@ export default function QuickServices() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
             gap: '1rem',
           }}
           className="quick-services-grid"
