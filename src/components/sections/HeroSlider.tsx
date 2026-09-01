@@ -109,12 +109,41 @@ export default function HeroSlider({ slides, phone, whatsapp, whatsappMessage, h
     ? `https://wa.me/${waNum}?text=${encodeURIComponent(whatsappMessage || 'Merhaba, randevu almak istiyorum.')}`
     : '/iletisim';
 
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+
+  const onTouchEndHandler = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      next(true);
+    }
+    if (isRightSwipe) {
+      prev(true);
+    }
+  };
+
   return (
     <section
-      style={{ position: 'relative', minHeight: height, overflow: 'hidden', background: 'linear-gradient(160deg, #0D1117, #11171D)' }}
+      className="hero-slider-section"
+      style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(160deg, #0D1117, #11171D)' }}
       aria-label="Hero Slider"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEndHandler}
     >
       {/* ── BG Image ── */}
       {slide.bgImage && (
@@ -148,12 +177,12 @@ export default function HeroSlider({ slides, phone, whatsapp, whatsappMessage, h
       {/* ── Slide Content ── */}
       <div
         key={current}
+        className="hero-slider-content"
         style={{
           position: 'relative',
           zIndex: 10,
           display: 'flex',
           alignItems: 'center',
-          minHeight: height,
           paddingTop: '8rem',
           paddingBottom: '6rem',
           opacity: isAnimating && !reducedMotion ? 0 : 1,

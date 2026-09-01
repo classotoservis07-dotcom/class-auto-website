@@ -524,3 +524,11 @@ img, video {
 /* ─── Evrensel anchor scroll-margin ──────────────────────────────── */
 /* Tüm id'li elementler header yüksekliği kadar scroll marjı alır */
 [id] { scroll-margin-top: 120px; }
+
+/* Hero Responsive */
+.hero-slider-section { min-height: 92vh; }
+.hero-slider-content { min-height: 92vh; }
+@media (max-width: 767px) {
+  .hero-slider-section { min-height: 60vh !important; }
+  .hero-slider-content { min-height: 60vh !important; }
+}

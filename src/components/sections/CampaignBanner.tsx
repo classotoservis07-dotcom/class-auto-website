@@ -176,7 +176,9 @@ export default async function CampaignBanner() {
 
       {/* === Fiyat overlay — sağ alt köşe === */}
       {campaign.badge && (
-        <div style={{
+        <div 
+          className="campaign-badge-overlay"
+          style={{
           position: 'absolute',
           bottom: '24px',
           right: '32px',

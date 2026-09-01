@@ -21,7 +21,22 @@ const SERVICE_ICONS: Record<string, React.ReactNode> = {
   Search: (<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>),
 };
 
-export default function ServicesPage() {
+import { prisma } from '@/lib/prisma';
+import { unstable_cache } from 'next/cache';
+
+const getServices = unstable_cache(
+  async () => prisma.service.findMany({
+    where: { isActive: true },
+    orderBy: { sortOrder: 'asc' },
+  }),
+  ['services-list'],
+  { tags: ['services'], revalidate: 3600 }
+);
+
+export default async function ServicesPage() {
+  const dbServices = await getServices();
+  const services = dbServices.length > 0 ? dbServices : SERVICES;
+
   return (
     <>
       {/* ── Sayfa başlığı ── */}
@@ -47,10 +62,12 @@ export default function ServicesPage() {
       <section style={{ background: '#FFFFFF', padding: '4rem 0' }}>
         <div className="container-site">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES.map((service) => (
+            {services.map((service) => {
+              const href = service.slug.startsWith('/') ? service.slug : `/hizmetler/${service.slug}`;
+              return (
               <Link
                 key={service.id}
-                href={service.slug}
+                href={href}
                 style={{
                   display: 'block',
                   background: '#FFFFFF',
@@ -64,20 +81,20 @@ export default function ServicesPage() {
                 className="svc-card"
               >
                 <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: 'rgba(227,6,19,0.07)', border: '1px solid rgba(227,6,19,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E30613', marginBottom: '18px' }}>
-                  {SERVICE_ICONS[service.icon]}
+                  {SERVICE_ICONS[service.icon || 'Wrench'] || SERVICE_ICONS['Wrench']}
                 </div>
                 <h2 style={{ color: '#1D252D', fontWeight: 700, fontSize: '17px', marginBottom: '10px', fontFamily: 'Oswald, Arial Narrow, sans-serif' }}>
                   {service.title}
                 </h2>
                 <p style={{ color: '#66717C', fontSize: '14px', lineHeight: 1.65, marginBottom: '18px' }}>
-                  {service.description}
+                  {'shortDesc' in service ? service.shortDesc : service.description}
                 </p>
                 <span style={{ color: '#E30613', fontSize: '14px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                   Detaylı Bilgi Al
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </span>
               </Link>
-            ))}
+            )})}
           </div>
           <style>{`.svc-card:hover { border-color: rgba(227,6,19,0.3) !important; transform: translateY(-3px); box-shadow: 0 10px 28px rgba(227,6,19,0.07); }`}</style>
         </div>

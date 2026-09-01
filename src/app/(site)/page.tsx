@@ -158,15 +158,27 @@ const getHeroSlides = unstable_cache(
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
+const getServices = unstable_cache(
+  async () => prisma.service.findMany({
+    where: { isActive: true },
+    orderBy: { sortOrder: 'asc' },
+  }),
+  ['services-list'],
+  { tags: ['services'], revalidate: 3600 }
+);
+
 export default async function HomePage() {
-  const [hero, heroSlidesDB, settings, featuredWorks, reviews, dbFaqs] = await Promise.all([
+  const [hero, heroSlidesDB, settings, featuredWorks, reviews, dbFaqs, dbServices] = await Promise.all([
     getHero().catch(() => null),
     getHeroSlides().catch(() => []),
     getSiteSettings().catch(() => null),
     getFeaturedWorks().catch(() => []),
     getHomeReviews().catch(() => []),
     getHomeFaqs().catch(() => []),
+    getServices().catch(() => []),
   ]);
+
+  const services = dbServices.length > 0 ? dbServices : SERVICES;
 
   // WhatsApp URL
   const waNum = settings?.whatsapp?.replace(/\D/g, '');
@@ -269,10 +281,12 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {SERVICES.map((service) => (
+            {services.map((service) => {
+              const href = service.slug.startsWith('/') ? service.slug : `/hizmetler/${service.slug}`;
+              return (
               <Link
                 key={service.id}
-                href={service.slug}
+                href={href}
                 style={{
                   display: 'block',
                   background: '#FFFFFF',
@@ -286,20 +300,20 @@ export default async function HomePage() {
                 className="service-card-light"
               >
                 <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(227,6,19,0.08)', border: '1px solid rgba(227,6,19,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E30613', marginBottom: '16px' }}>
-                  {SERVICE_ICONS[service.icon]}
+                  {SERVICE_ICONS[service.icon || 'Wrench'] || SERVICE_ICONS['Wrench']}
                 </div>
                 <h3 style={{ color: '#1D252D', fontWeight: 700, marginBottom: '8px', fontSize: '15px', fontFamily: 'Oswald, Arial Narrow, sans-serif' }}>
                   {service.title}
                 </h3>
                 <p style={{ color: '#66717C', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '16px' }}>
-                  {service.shortDesc}
+                  {'shortDesc' in service ? service.shortDesc : service.description}
                 </p>
                 <span style={{ color: '#E30613', fontSize: '0.875rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                   Detaylı İncele
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </span>
               </Link>
-            ))}
+            )})}
           </div>
 
           <style>{`
