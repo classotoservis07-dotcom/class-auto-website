@@ -25,10 +25,13 @@ import { prisma } from '@/lib/prisma';
 import { unstable_cache } from 'next/cache';
 
 const getServices = unstable_cache(
-  async () => prisma.service.findMany({
-    where: { isActive: true },
-    orderBy: { sortOrder: 'asc' },
-  }),
+  async () => {
+    const rows = await prisma.service.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: 'asc' },
+    });
+    return rows as Array<{ id: number; title: string; slug: string; description: string | null; icon: string | null; sortOrder: number; isActive: boolean }>;
+  },
   ['services-list'],
   { tags: ['services'], revalidate: 3600 }
 );
@@ -87,7 +90,7 @@ export default async function ServicesPage() {
                   {service.title}
                 </h2>
                 <p style={{ color: '#66717C', fontSize: '14px', lineHeight: 1.65, marginBottom: '18px' }}>
-                  {'shortDesc' in service ? service.shortDesc : service.description}
+                  {(service as { description?: string | null; shortDesc?: string }).description || (service as { shortDesc?: string }).shortDesc || ''}
                 </p>
                 <span style={{ color: '#E30613', fontSize: '14px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                   Detaylı Bilgi Al
