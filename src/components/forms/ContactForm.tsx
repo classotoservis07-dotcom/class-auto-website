@@ -4,26 +4,57 @@ import { useActionState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { submitContactForm, type FormState } from '@/app/(site)/actions/contact';
 import { SERVICE_OPTIONS } from '@/lib/schemas';
-import { trackGoogleAdsConversion } from '@/lib/googleAds';
+import { GOOGLE_ADS_ID, GOOGLE_ADS_LABELS } from '@/lib/googleAds';
 
 const initialState: FormState = { status: 'idle', message: '' };
 
 export default function ContactForm() {
   const [state, action, isPending] = useActionState(submitContactForm, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  // Prevents double-firing (React StrictMode dev + concurrent renders)
+  const conversionSentRef = useRef(false);
 
-  // Başarılı gönderimde formu sıfırla + Google Ads dönüşümü kaydet
   useEffect(() => {
-    if (state.status === 'success') {
-      formRef.current?.reset();
-      // Google Ads form conversion — backend success sonrası, submit butonunda değil
-      trackGoogleAdsConversion('form');
+    // Guard: only run when status changes TO 'success'
+    if (state.status !== 'success') {
+      // Reset guard when user can submit again (status leaves 'success')
+      if (state.status === 'idle') conversionSentRef.current = false;
+      return;
+    }
+
+    formRef.current?.reset();
+
+    // Prevent double-firing in the same success cycle
+    if (conversionSentRef.current) return;
+    conversionSentRef.current = true;
+
+    // ── Google Ads Form Conversion ────────────────────────────────────
+    // Fires ONLY after backend confirms success — not on submit click,
+    // not on validation error, not on page load.
+    // Uses direct window.gtag call to avoid any wrapper abstraction issues.
+    // ─────────────────────────────────────────────────────────────────
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const gtag = (window as any).gtag;
+      if (typeof gtag === 'function') {
+        // Primary: Google Ads Conversion
+        gtag('event', 'conversion', {
+          send_to: `${GOOGLE_ADS_ID}/${GOOGLE_ADS_LABELS.form}`,
+        });
+        // Secondary: Analytics event
+        gtag('event', 'lead_form_submit', {
+          event_category: 'lead',
+          event_label:    'form_success',
+        });
+      }
+    } catch {
+      // Silent fail — never break the UI
     }
   }, [state.status]);
 
-
   const fieldError = (name: string) =>
     state.errors?.[name]?.[0];
+
 
   return (
     <form

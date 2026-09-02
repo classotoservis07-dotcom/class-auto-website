@@ -35,33 +35,38 @@ const ANALYTICS_EVENTS: Record<ConversionType, { event: string; category: string
 /**
  * trackGoogleAdsConversion
  *
- * - Always fires the analytics event (whatsapp_click, phone_click, lead_form_submit)
- * - Only fires gtag 'conversion' event when the label is NOT a placeholder
- *   (prevents sending invalid conversion data to Google Ads)
+ * - Fires the analytics event (whatsapp_click, phone_click, lead_form_submit)
+ * - Fires gtag 'conversion' event when label is NOT a placeholder
  * - Silent fail — never throws, never breaks the UI
  */
 export function trackGoogleAdsConversion(type: ConversionType): void {
+  if (typeof window === 'undefined') return;
+
+  const { event, category, label } = ANALYTICS_EVENTS[type];
+  const conversionLabel = GOOGLE_ADS_LABELS[type];
+  const isPlaceholder = conversionLabel.endsWith('_CONVERSION_LABEL');
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const gtagFn = (window as any).gtag;
+
   try {
-    if (typeof window === 'undefined') return;
-    if (typeof window.gtag !== 'function') return;
-
-    const { event, category, label } = ANALYTICS_EVENTS[type];
-    const conversionLabel = GOOGLE_ADS_LABELS[type];
-    const isPlaceholder = conversionLabel.endsWith('_CONVERSION_LABEL');
-
-    // 1) Fire analytics event (always)
-    window.gtag('event', event, {
+    // 1) Analytics event
+    gtagFn('event', event, {
       event_category: category,
       event_label:    label,
     });
+  } catch {
+    // gtag not ready yet — silent fail
+  }
 
-    // 2) Fire Google Ads conversion (only when real label is set)
-    if (!isPlaceholder) {
-      window.gtag('event', 'conversion', {
+  // 2) Google Ads conversion (only with real label)
+  if (!isPlaceholder) {
+    try {
+      gtagFn('event', 'conversion', {
         send_to: `${GOOGLE_ADS_ID}/${conversionLabel}`,
       });
+    } catch {
+      // Silent fail
     }
-  } catch {
-    // Silent fail
   }
 }
