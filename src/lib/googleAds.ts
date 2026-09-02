@@ -10,12 +10,9 @@
 export const GOOGLE_ADS_ID = 'AW-18419853908';
 
 export const GOOGLE_ADS_LABELS = {
-  /** TODO: Replace with real label from Google Ads → WhatsApp conversion */
-  whatsapp: 'WHATSAPP_CONVERSION_LABEL',
-  /** TODO: Replace with real label from Google Ads → Phone conversion */
-  phone:    'PHONE_CONVERSION_LABEL',
-  /** TODO: Replace with real label from Google Ads → Form/lead conversion */
-  form:     'FORM_CONVERSION_LABEL',
+  whatsapp: 'Tre9CM-YwuwcENTUos9E',
+  phone:    'D3xvCIvQw-wcENTUos9E',
+  form:     '7z2rCNHs0OwcENTUos9E',
 } as const;
 
 export type ConversionType = keyof typeof GOOGLE_ADS_LABELS;
