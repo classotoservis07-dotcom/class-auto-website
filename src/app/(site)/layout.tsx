@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { SITE_CONFIG } from '@/lib/config';
 import { generateLocalBusinessSchema } from '@/lib/metadata';
 import { getSiteSettings } from '@/lib/site-settings';
@@ -7,6 +8,7 @@ import Footer from '@/components/layout/Footer';
 import FloatingContactButtons from '@/components/ui/FloatingContactButtons';
 import GTMScript from '@/components/analytics/GTMScript';
 import ConversionTracker from '@/components/analytics/ConversionTracker';
+import { GOOGLE_ADS_ID } from '@/lib/googleAds';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -51,7 +53,28 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       <GTMScript gtmId={s.gtmId || ''} />
+
+      {/* ── Google Ads Global Tag (gtag.js) ── */}
+      <Script
+        id="google-ads-js"
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+      />
+      <Script
+        id="google-ads-config"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GOOGLE_ADS_ID}');
+          `,
+        }}
+      />
+
       <Header />
+
       <main id="main-content" tabIndex={-1}>
         {children}
       </main>

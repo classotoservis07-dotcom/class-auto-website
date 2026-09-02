@@ -4,6 +4,7 @@ import { useActionState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { submitContactForm, type FormState } from '@/app/(site)/actions/contact';
 import { SERVICE_OPTIONS } from '@/lib/schemas';
+import { trackGoogleAdsConversion } from '@/lib/googleAds';
 
 const initialState: FormState = { status: 'idle', message: '' };
 
@@ -11,12 +12,15 @@ export default function ContactForm() {
   const [state, action, isPending] = useActionState(submitContactForm, initialState);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Başarılı gönderimde formu sıfırla
+  // Başarılı gönderimde formu sıfırla + Google Ads dönüşümü kaydet
   useEffect(() => {
     if (state.status === 'success') {
       formRef.current?.reset();
+      // Google Ads form conversion — backend success sonrası, submit butonunda değil
+      trackGoogleAdsConversion('form');
     }
   }, [state.status]);
+
 
   const fieldError = (name: string) =>
     state.errors?.[name]?.[0];

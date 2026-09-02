@@ -4,12 +4,16 @@
  * ConversionTracker — Client Component
  *
  * - Stores UTM params + GCLID in sessionStorage on page load
- * - Tracks conversion events via dataLayer.push
- * - Only active if window.dataLayer exists (GTM loaded)
- * - Attaches delegated event listeners to tel: and wa.me links
+ * - Tracks conversion events via dataLayer.push (GTM)
+ * - Tracks Google Ads conversions via gtag (Google Ads)
+ * - Attaches ONE delegated event listener to document — no duplicates on re-render
+ * - tel: click  → trackGoogleAdsConversion('phone')
+ * - wa.me click → trackGoogleAdsConversion('whatsapp')
+ * - Form success → tracked in ContactForm component
  */
 
 import { useEffect } from 'react';
+import { trackGoogleAdsConversion } from '@/lib/googleAds';
 
 // Extend window for GTM dataLayer
 declare global {
@@ -18,7 +22,7 @@ declare global {
   }
 }
 
-function push(event: string, params?: Record<string, unknown>) {
+function pushDataLayer(event: string, params?: Record<string, unknown>) {
   try {
     if (typeof window !== 'undefined') {
       window.dataLayer = window.dataLayer || [];
@@ -30,31 +34,31 @@ function push(event: string, params?: Record<string, unknown>) {
 }
 
 export function trackPhoneClick(source?: string) {
-  push('phone_click', { event_source: source || 'unknown' });
+  pushDataLayer('phone_click', { event_source: source || 'unknown' });
 }
 
 export function trackWhatsAppClick(source?: string) {
-  push('whatsapp_click', { event_source: source || 'unknown' });
+  pushDataLayer('whatsapp_click', { event_source: source || 'unknown' });
 }
 
 export function trackAppointmentFormSubmit(serviceType?: string) {
-  push('appointment_form_submit', { service_type: serviceType });
+  pushDataLayer('appointment_form_submit', { service_type: serviceType });
 }
 
 export function trackDirectionsClick() {
-  push('directions_click');
+  pushDataLayer('directions_click');
 }
 
 export function trackCampaignClick(campaignTitle?: string) {
-  push('campaign_click', { campaign_title: campaignTitle });
+  pushDataLayer('campaign_click', { campaign_title: campaignTitle });
 }
 
 export function trackMapOpen() {
-  push('map_open');
+  pushDataLayer('map_open');
 }
 
 export function trackServiceContact(serviceName?: string) {
-  push('service_contact', { service_name: serviceName });
+  pushDataLayer('service_contact', { service_name: serviceName });
 }
 
 export default function ConversionTracker() {
@@ -71,24 +75,33 @@ export default function ConversionTracker() {
       // sessionStorage might be unavailable
     }
 
-    // 2) Delegate click tracking for tel: and wa.me links
+    // 2) Delegated click handler — attached ONCE, no duplicate listeners on re-render
     const handler = (e: MouseEvent) => {
       const target = (e.target as HTMLElement).closest('a');
       if (!target) return;
       const href = target.getAttribute('href') || '';
 
       if (href.startsWith('tel:')) {
+        // GTM dataLayer push
         trackPhoneClick(document.title);
+        // Google Ads conversion + gtag analytics event
+        trackGoogleAdsConversion('phone');
+
       } else if (href.includes('wa.me') || href.includes('whatsapp')) {
+        // GTM dataLayer push
         trackWhatsAppClick(document.title);
+        // Google Ads conversion + gtag analytics event
+        trackGoogleAdsConversion('whatsapp');
+
       } else if (href.includes('maps.google') || href.includes('goo.gl/maps')) {
         trackDirectionsClick();
       }
     };
 
     document.addEventListener('click', handler);
+    // Cleanup on unmount — prevents duplicate listeners across navigations
     return () => document.removeEventListener('click', handler);
-  }, []);
+  }, []); // [] = run once on mount only
 
   return null;
 }
