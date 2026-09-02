@@ -20,12 +20,12 @@ export const GOOGLE_ADS_LABELS = {
 
 export type ConversionType = keyof typeof GOOGLE_ADS_LABELS;
 
-// Extend window for gtag
+// Extend window for gtag and dataLayer
 declare global {
   interface Window {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     gtag?: (...args: any[]) => void;
-    dataLayer?: unknown[];
+    dataLayer?: Record<string, unknown>[];
   }
 }
 

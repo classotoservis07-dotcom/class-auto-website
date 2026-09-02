@@ -15,13 +15,6 @@
 import { useEffect } from 'react';
 import { trackGoogleAdsConversion } from '@/lib/googleAds';
 
-// Extend window for GTM dataLayer
-declare global {
-  interface Window {
-    dataLayer?: Record<string, unknown>[];
-  }
-}
-
 function pushDataLayer(event: string, params?: Record<string, unknown>) {
   try {
     if (typeof window !== 'undefined') {
